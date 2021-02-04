@@ -6,9 +6,6 @@ var sensorDoor = false;
 
 
 
-
-
-
 //======================== - Column - ========================//
 class Column {
     constructor(_ID, _status, _amountOfFloors, _amountOfElevators){
@@ -79,7 +76,7 @@ class Column {
             else if(_floor < elevator.currentFloor & elevator.direction == "down" &  elevator.direction == _direction){
                 bestElevatorInfo = this.checkIfElevatorISBetter(2, elevator, bestElevatorInfo, _floor);
             }
-            else if(elevator.status == "idle"){//| elevator.status == "stopped"
+            else if(elevator.status == "idle"){
                 bestElevatorInfo = this.checkIfElevatorISBetter(3, elevator, bestElevatorInfo, _floor);
             }
             else{
@@ -107,7 +104,6 @@ class Column {
     };
 }
 
-
 //======================== - Elevator - ========================//
 class Elevator {
     constructor(_ID, _status, _amountOfFloors, _currentFloor){
@@ -116,7 +112,7 @@ class Elevator {
         this.amountOfFloors = _amountOfFloors;
         this.direction = null;
         this.currentFloor = _currentFloor;
-        this.door = new Door (this.ID, this.status);
+        this.door = new Door (this.ID, null);
         this.floorRequestButtonsList = [];
         this.floorRequestList = [];
         this.capacityStatus = null;
@@ -159,6 +155,7 @@ class Elevator {
         while(this.floorRequestList.length != 0){
             this.operateDoors("closed");
             if(this.door.status == "closed"){
+                console.log("Door without obstruction\n")
                 console.log("Status door:" + this.door.status + "\n");
                 this.status = "moving";
                 if(this.currentFloor > _floor){
@@ -188,20 +185,22 @@ class Elevator {
 
     sortFloorList(){
         if (this.direction == "up"){
-            this.floorRequestList.sort((a,b) => a - b);
+            this.floorRequestList = this.floorRequestList.sort((a,b) => a - b);
         }else{
-            this.floorRequestList.sort((a,b) => b -a);
+            this.floorRequestList = this.floorRequestList.sort((a,b) => b -a);
         }
     }
 
 
     capacityCalculate(){
         if(actualCapacity <= this.maxCapacity){
-            this.capacityStatus = "operating"
+            this.capacityStatus = "operating";
             this.displayCapacity = actualCapacity;
+            console.log("\nCapacity display: Weight within allowable");
         }else{
-            this.capacityStatus = "overloaded"
+            this.capacityStatus = "overloaded";
             this.displayCapacity = "Exceeded weight, authorized weight is" + this.maxCapacity + "lbs";
+            console.log(this.displayCapacity);
         }
     }
 
@@ -209,6 +208,8 @@ class Elevator {
     operateDoors(_command){
         if(sensorDoor == false){
             this.door.status = _command;
+        }else{
+            console.log("Blocked door")
         }
     }
 }
@@ -266,12 +267,15 @@ function createTest(){
                 + "Direction: " + column1.elevatorsList[1].direction + "\n");
 }
 
+
+
 //=========== scenario1 ===============\\
 
 function scenario1(){
     createTest();
     console.dir('Scenario 1: ')
-    console.log('Elevator A is idle at floor 2 \nElevator B is idle at floor 6.\n');
+    console.log('Elevator A is idle at floor 2' + '\n' 
+                + 'Elevator B is idle at floor 6.' +'\n');
 
     column1.elevatorsList[0].currentFloor = 2;
     column1.elevatorsList[0].status = "idle";
@@ -287,22 +291,19 @@ function scenario1(){
                 + "Current Floor: " + column1.elevatorsList[1].currentFloor + "\n");
 
 
-    console.dir("Request Elevator from floor: 3 and direction: up")
-
-    let elevatorSelected = column1.requestElevator(3, "up");
-
+    console.dir("Request Elevator from floor: 3 and direction: up");
+    let Person1 = column1.requestElevator(3, "up");
     console.dir("Request Floor: 7");
-    elevatorSelected.requestFloor(7);
+    Person1.requestFloor(7);
 }
 
-
 //=========== scenario2 ===============\\
-
 
 function scenario2(){
     createTest();
     console.dir('Scenario 2: ')
-    console.log('Elevator A is idle at floor 10 \nElevator B is idle at floor 3.\n');
+    console.log('Elevator A is idle at floor 10' + '\n' 
+                + 'Elevator B is idle at floor 3.' + '\n');
 
     column1.elevatorsList[0].currentFloor = 10;
     column1.elevatorsList[0].status = "idle";
@@ -335,7 +336,6 @@ function scenario2(){
 }
 
 //=========== scenario3 ===============\\
-
 
 function scenario3(){
     createTest();
@@ -375,6 +375,7 @@ function scenario3(){
     console.dir("Request Floor: 3");
     Person2.requestFloor(3);
 }
+
 // scenario1();
 // scenario2();
-scenario3();
+// scenario3();
