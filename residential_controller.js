@@ -48,7 +48,7 @@ class Column {
 
     requestElevator(_floor, _direction){
         const elevator = this.findBestElevator(_floor, _direction);
-        console.log("Chosen elevator: " + elevator.ID + "\n");
+        console.log("\nChosen elevator: " + elevator.ID + "\n");
         elevator.floorRequestList.push(_floor);
         elevator.sortFloorList();
         elevator.capacityCalculate();
@@ -165,15 +165,15 @@ class Elevator {
                 }
                 while(this.currentFloor != _floor){
                     if(this.direction == "up"){
-                        console.log("Elevator current floor: " + this.currentFloor + "   ||     Status: " + this.status)
+                        console.log("Elevator current floor: " + this.currentFloor + "   ||     Status: " + this.status);
                         this.currentFloor ++;
                     }else if(this.direction == "down"){
-                        console.log("Elevator current floor: " + this.currentFloor + "   ||     Status: " + this.status)
+                        console.log("Elevator current floor: " + this.currentFloor + "   ||     Status: " + this.status);
                         this.currentFloor --;
                     }
                 }
-                console.log("Elevator current floor: " + this.currentFloor + "   ||     Status: " + this.status +  "\n")
                 this.status = "stopped";
+                console.log("Elevator current floor: " + this.currentFloor + "   ||     Status: " + this.status +  "\n");
                 this.operateDoors("opened");
                 console.log("Status door:" + this.door.status + "\n");
             }
@@ -196,7 +196,7 @@ class Elevator {
         if(actualCapacity <= this.maxCapacity){
             this.capacityStatus = "operating";
             this.displayCapacity = actualCapacity;
-            console.log("\nCapacity display: Weight within allowable");
+            console.log("\nCapacity display: Safe");
         }else{
             this.capacityStatus = "overloaded";
             this.displayCapacity = "Exceeded weight, authorized weight is" + this.maxCapacity + "lbs";
@@ -255,7 +255,7 @@ function createTest(){
 
     console.dir('Elevators created:',);
 
-    console.log("\nTotal elevators= " + column1.elevatorsList.length,);
+    console.log("Total elevators= " + column1.elevatorsList.length,);
 
     console.log("ID = " + column1.elevatorsList[0].ID + "  ||  " 
                 + "Status: " + column1.elevatorsList[0].status + "  ||  " 
@@ -266,8 +266,6 @@ function createTest(){
                 + "Current Floor: " + column1.elevatorsList[1].currentFloor + "  ||  " 
                 + "Direction: " + column1.elevatorsList[1].direction + "\n");
 }
-
-
 
 //=========== scenario1 ===============\\
 
