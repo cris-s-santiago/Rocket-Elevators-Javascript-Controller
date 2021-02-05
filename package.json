@@ -1,0 +1,19 @@
+{
+  "name": "residential_controller_js",
+  "version": "1.0.0",
+  "description": "residential controller js",
+  "main": "residential_controller.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/cris-s-santiago/Rocket-Elevators-Javascript-Controller.git"
+  },
+  "author": "Cristiane Santiago",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/cris-s-santiago/Rocket-Elevators-Javascript-Controller/issues"
+  },
+  "homepage": "https://github.com/cris-s-santiago/Rocket-Elevators-Javascript-Controller#readme"
+}

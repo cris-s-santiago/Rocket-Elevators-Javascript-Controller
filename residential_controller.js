@@ -1,10 +1,3 @@
-var elevatorID = 1;
-var callButtonID = 1;
-var floorRequestButtonID = 1;
-var actualCapacity = 0;
-var sensorDoor = false;
-
-
 
 //======================== - Column - ========================//
 class Column {
@@ -20,8 +13,9 @@ class Column {
     }
 
     
-    //Elevators creation
+    //Through this method we create the elevators
     createElevator(_amountOfElevators) {
+        var elevatorID = 1;
         for(let i = 1; i <= _amountOfElevators; i++){
          const elevator = new Elevator (elevatorID, "idle", this.amountOfFloors, 1);
          this.elevatorsList.push(elevator);
@@ -29,15 +23,16 @@ class Column {
         }
     }
 
-
+    //Through this method we create the buttons, Up and Down 
     createCallButtons(_amountOfFloors){
+        var callButtonID = 1;
         for(let buttonFloor = 1; buttonFloor <= _amountOfFloors; buttonFloor++){
-            if(buttonFloor < _amountOfFloors){
+            if(buttonFloor < _amountOfFloors){ //Ensures that on the last floor you don't have an up button.
                 const callButton = new CallButton (callButtonID, "OFF", buttonFloor, "up");
                 this.callButtonsList.push(callButton);
                 callButtonID ++;
             }
-            if(buttonFloor > 1){
+            if(buttonFloor > 1){ //Ensures that on the first floor you don't have a down button.
                 const callButton = new CallButton (callButtonID, "OFF", buttonFloor, "down");
                 this.callButtonsList.push(callButton);
                 callButtonID ++; 
@@ -45,10 +40,10 @@ class Column {
         }
     }
 
-
-    requestElevator(_floor, _direction){
+    //Through this method, we will handle the request for an elevator
+    requestElevator(_floor, _direction){        
         const elevator = this.findBestElevator(_floor, _direction);
-        console.log("\nChosen elevator: " + elevator.ID + "\n");
+        //console.log("\nChosen elevator: " + elevator.ID + "\n");
         elevator.floorRequestList.push(_floor);
         elevator.sortFloorList();
         elevator.capacityCalculate();
@@ -57,7 +52,7 @@ class Column {
         return elevator;
     }
 
-
+    //Through this method we will score the best elevator, taking into account proximity, direction and its status
     findBestElevator(_floor, _direction){
         let bestElevatorInfo = {
             bestElevator: null,
@@ -66,19 +61,23 @@ class Column {
         };
 
         this.elevatorsList.forEach(elevator => {
+            //The elevator is at my floor and going in the direction I want
             if(_floor == elevator.currentFloor & elevator.status == "stopped" & _direction == elevator.direction){
                 bestElevatorInfo = this.checkIfElevatorISBetter(1, elevator, bestElevatorInfo, _floor);
             }
-
+             //The elevator is lower than me, is coming up and I want to go up
             else if(_floor > elevator.currentFloor  & elevator.direction == "up" &  elevator.direction == _direction){
                 bestElevatorInfo = this.checkIfElevatorISBetter(2, elevator, bestElevatorInfo, _floor);
             }
+             //The elevator is higher than me, is coming down and I want to go down
             else if(_floor < elevator.currentFloor & elevator.direction == "down" &  elevator.direction == _direction){
                 bestElevatorInfo = this.checkIfElevatorISBetter(2, elevator, bestElevatorInfo, _floor);
             }
+             //The elevator is idle
             else if(elevator.status == "idle"){
                 bestElevatorInfo = this.checkIfElevatorISBetter(3, elevator, bestElevatorInfo, _floor);
             }
+             //The elevator is not available, but still could take the call nothing else better is found
             else{
                 bestElevatorInfo = this.checkIfElevatorISBetter(4, elevator, bestElevatorInfo, _floor);
             }
@@ -86,7 +85,7 @@ class Column {
         return bestElevatorInfo.bestElevator;
     }
 
-
+    //Through this method we will analyze the scores of the method above and select the best one
     checkIfElevatorISBetter(scoreToCheck, newElevator, bestElevatorInfo, floor){
         if(scoreToCheck < bestElevatorInfo.bestScore){
             bestElevatorInfo.bestScore = scoreToCheck;
@@ -121,8 +120,9 @@ class Elevator {
         this.createFloorRequestButton(_amountOfFloors);
     }    
 
-    
+    //Through this method we create the internal buttons of the elevators
     createFloorRequestButton(_amountOfFloors){
+        var floorRequestButtonID = 1;
         for(let buttonFloor = 1; buttonFloor <= _amountOfFloors; buttonFloor++){
             const floorRequestButton = new FloorRequestButton(floorRequestButtonID, "OFF", buttonFloor);
             this.floorRequestButtonsList.push(floorRequestButton);
@@ -130,7 +130,7 @@ class Elevator {
         }
     }
 
-
+    //Through this method, we will handle the request for a floor
     requestFloor(_floor){
         this.floorRequestList.push(_floor);
         this.sortFloorList();
@@ -141,24 +141,25 @@ class Elevator {
             _direction = "up"
         }else if(this.currentFloor > destination){
             _direction = "down"
-        }
-
-        this.capacityCalculate();
+        }        
+        this.capacityCalculate();        
         this.movElev(_floor, _direction);
-    }
+    }    
 
-
-    movElev(_floor, _direction){
+    //Through this sequence we can move the elevator
+    movElev(_floor, _direction){       
+        //Check elevator capacity, as long as it is not safe, it will not move
         while(this.capacityStatus != "operating"){
-            this.capacityCalculate();
-        }
+            this.capacityCalculate();      
+        }       
+        //Check if the door is closed to move the elevator
         while(this.floorRequestList.length != 0){
             this.operateDoors("closed");
-            if(this.door.status == "closed"){
-                console.log("Door without obstruction\n")
-                console.log("Status door:" + this.door.status + "\n");
-                this.status = "moving";
-                if(this.currentFloor > _floor){
+            if(this.door.status == "closed"){ // Check if the door dont' have any obstruction
+                //console.log("Door without obstruction\n")
+                //onsole.log("Status door:" + this.door.status + "\n");
+                this.status = "moving"; //Changes the status of the elevator when it starts to move
+                if(this.currentFloor > _floor){  //Defines the direction from the request floor, and its position
                     this.direction = "down";
                 }else{
                     this.direction = "up";
@@ -172,17 +173,17 @@ class Elevator {
                         this.currentFloor --;
                     }
                 }
-                this.status = "stopped";
-                console.log("Elevator current floor: " + this.currentFloor + "   ||     Status: " + this.status +  "\n");
+                this.status = "stopped"; //Changes the status of the elevator when it reaches the correct floor
+                //console.log("Elevator current floor: " + this.currentFloor + "   ||     Status: " + this.status +  "\n");
                 this.operateDoors("opened");
-                console.log("Status door:" + this.door.status + "\n");
+                //console.log("Status door:" + this.door.status + "\n");
             }
             this.floorRequestList.shift();
         }
-        this.status = "idle";
+        this.status = "idle"; //Changes the status of the elevator when it finishes its list of floors to go
     }
 
-
+    //Through this sequence we can sort the list in ascending or descending order, according to the direction the elevator is going
     sortFloorList(){
         if (this.direction == "up"){
             this.floorRequestList = this.floorRequestList.sort((a,b) => a - b);
@@ -191,25 +192,25 @@ class Elevator {
         }
     }
 
-
+    //Through this sequence we check if we are not overweight in the elevator
     capacityCalculate(){
+        var actualCapacity = 0; // External data
         if(actualCapacity <= this.maxCapacity){
             this.capacityStatus = "operating";
-            this.displayCapacity = actualCapacity;
-            console.log("\nCapacity display: Safe");
+            this.displayCapacity = "Capacity display: Safe";
         }else{
             this.capacityStatus = "overloaded";
-            this.displayCapacity = "Exceeded weight, authorized weight is" + this.maxCapacity + "lbs";
-            console.log(this.displayCapacity);
+            this.displayCapacity = "Exceeded weight, authorized weight is " + this.maxCapacity + "lbs";
         }
     }
 
-
+    //Through this sequence we can verify that there is no obstruction in the door
     operateDoors(_command){
+        var sensorDoor = false; // External data
         if(sensorDoor == false){
             this.door.status = _command;
         }else{
-            console.log("Blocked door")
+            //console.log("Blocked door")
         }
     }
 }
@@ -290,9 +291,9 @@ function scenario1(){
 
 
     console.dir("Request Elevator from floor: 3 and direction: up");
-    let Person1 = column1.requestElevator(3, "up");
+    let person1 = column1.requestElevator(3, "up");
     console.dir("Request Floor: 7");
-    Person1.requestFloor(7);
+    person1.requestFloor(7);
 }
 
 //=========== scenario2 ===============\\
@@ -318,19 +319,19 @@ function scenario2(){
 
 
     console.dir("Request Elevator from floor: 1 and direction: up");
-    let Person1 = column1.requestElevator(1, "up");
+    let person1 = column1.requestElevator(1, "up");
     console.dir("Request Floor: 6");
-    Person1.requestFloor(6);
+    person1.requestFloor(6);
 
     console.dir("2 minutes later, request Elevator from floor: 3 and direction: up");
-    let Person2 = column1.requestElevator(3, "up");
+    let person2 = column1.requestElevator(3, "up");
     console.dir("Request Floor: 5");
-    Person2.requestFloor(5);
+    person2.requestFloor(5);
 
     console.dir("Finally, request Elevator from floor: 9 and direction: down");
-    let Person3 = column1.requestElevator(9, "down");
+    let person3 = column1.requestElevator(9, "down");
     console.dir("Request Floor: 2");
-    Person3.requestFloor(2);
+    person3.requestFloor(2);
 }
 
 //=========== scenario3 ===============\\
@@ -356,9 +357,9 @@ function scenario3(){
 
 
     console.dir("Request Elevator from floor: 3 and direction: down");
-    let Person1 = column1.requestElevator(3, "down");
+    let person1 = column1.requestElevator(3, "down");
     console.dir("Request Floor: 2");
-    Person1.requestFloor(2);
+    person1.requestFloor(2);
 
     column1.elevatorsList[1].currentFloor = 6;
     column1.elevatorsList[1].status = "idle";
@@ -369,11 +370,13 @@ function scenario3(){
                 + "Current Floor: " + column1.elevatorsList[1].currentFloor + "\n");
 
     console.dir("5 minutes later, request Elevator from floor: 10 and direction: down");
-    let Person2 = column1.requestElevator(10, "down");
+    let person2 = column1.requestElevator(10, "down");
     console.dir("Request Floor: 3");
-    Person2.requestFloor(3);
+    person2.requestFloor(3);
 }
 
 // scenario1();
 // scenario2();
 // scenario3();
+
+module.exports = {Column, Elevator, CallButton, FloorRequestButton, Door}
