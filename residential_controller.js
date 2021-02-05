@@ -156,8 +156,7 @@ class Elevator {
         while(this.floorRequestList.length != 0){
             this.operateDoors("closed");
             if(this.door.status == "closed"){ // Check if the door dont' have any obstruction
-                //console.log("Door without obstruction\n")
-                //onsole.log("Status door:" + this.door.status + "\n");
+                //console.log("Status door:" + this.door.status + "\n");
                 this.status = "moving"; //Changes the status of the elevator when it starts to move
                 if(this.currentFloor > _floor){  //Defines the direction from the request floor, and its position
                     this.direction = "down";
@@ -166,10 +165,10 @@ class Elevator {
                 }
                 while(this.currentFloor != _floor){
                     if(this.direction == "up"){
-                        console.log("Elevator current floor: " + this.currentFloor + "   ||     Status: " + this.status);
+                        //console.log("Elevator current floor: " + this.currentFloor + "   ||     Status: " + this.status);
                         this.currentFloor ++;
                     }else if(this.direction == "down"){
-                        console.log("Elevator current floor: " + this.currentFloor + "   ||     Status: " + this.status);
+                        //console.log("Elevator current floor: " + this.currentFloor + "   ||     Status: " + this.status);
                         this.currentFloor --;
                     }
                 }
